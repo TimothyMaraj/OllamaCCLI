@@ -157,6 +157,11 @@ class user():
         """
         pass
     def requestBuilder(self):
+        """
+        Note! python can handled embedded json? do not try to use f strings to create json
+        
+        """
+
         jsonRequest = {
         "model": os.getenv("MODEL"),
         "prompt": self.prompt,
