@@ -5,3 +5,4 @@ OllamaCCLI is a Custom Command Line Interface built for fun. It serves as a prac
 # Future Plans
 - implement model switching/ selection
 - list useable models 
+- def need a script that starts ollama / changes models? when running?

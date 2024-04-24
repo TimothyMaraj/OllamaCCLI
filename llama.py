@@ -6,7 +6,7 @@ from dotenv import load_dotenv, set_key, dotenv_values
 import os
 
 load_dotenv()
-
+debug = False
 
 """
 llamaccli --generate "<prompt>"
@@ -50,32 +50,21 @@ def funciton generate
 
 """
 
-
+MODEL = os.getenv("MODEL")
 # Attempt at OOPing this 
 
 class user(): 
     def __init__(self,inputPrompt=""):
-        user.prompt=inputPrompt
-        user.model= os.getenv("MODEL")
-        print(user.model)
-       ## Load existing environment variables from the .env file
-       #env_vars = dotenv_values(".env")
-
-       ## Change the value of the "MODEL" variable to "Gemma"
-       #env_vars["MODEL"] = "Gemma"
-
-       ## Update the .env file with the new value
-       #set_key(".env", "MODEL", env_vars["MODEL"])
-       #os.environ["MODEL"] = env_vars["MODEL"]
-
-       #user.model= os.getenv("MODEL")
-       #print(user.model)
-
+        self.prompt=inputPrompt
+        self.model= os.getenv("MODEL")
+        self.response=""
+    def getPrompt(self):
+        self.prompt = input(f"What would you like to ask {MODEL}?:")
 
     def getModelData(self):
         with open('models.json','r') as file: 
-            models = json.load(file)
-        return models["models"]
+            data = json.load(file)
+        return data["models"]
 
     def changeModel(self,newModel):
         """
@@ -87,17 +76,37 @@ class user():
 
         # Modify environment variables
         os.environ["VARIABLE_NAME"] = "new_value"
+
+         ## Load existing environment variables from the .env file
+       #env_vars = dotenv_values(".env")
+
+       ## Change the value of the "MODEL" variable to "Gemma"
+       #env_vars["MODEL"] = "Gemma"
+
+       ## Update the .env file with the new value
+       #set_key(".env", "MODEL", env_vars["MODEL"])
+       #os.environ["MODEL"] = env_vars["MODEL"]
+
+       #user.model= os.getenv("MODEL")
+       #print(user.model)
         """
+        env_vars = dotenv_values(".env")
         models = self.getModelData()
-        print(models)
+        if debug:
+            print(models)
         if newModel not in models: 
-            print(models.items())
             print("\033[31mModel Not Found\033[0m")
             return None
         if newModel == os.environ["MODEL"]: 
             print("\033[31mMODEL ALREADY IN USE\033[0m")
             return None
-            
+        
+        env_vars["MODEL"] = newModel
+        set_key(".env", "MODEL", env_vars["MODEL"])
+        os.environ["MODEL"] = env_vars["MODEL"]
+        MODEL = os.getenv("MODEL")
+        print("\033[32mModel Changed to: "+ str(os.getenv("MODEL"))+"\033[0m")
+        
 
     def listModels(self):
         """
@@ -147,10 +156,21 @@ class user():
         - for now user input on models
         """
         pass
-    def requestBuilder(self): 
-        pass
+    def requestBuilder(self):
+        jsonRequest = {
+        "model": os.getenv("MODEL"),
+        "prompt": self.prompt,
+        "stream": False  # Note: Python boolean value is capitalized (False)
+        }
+        
+        self.response = request.post("http://localhost:11434/api/generate", data=None, json=jsonRequest)
+        jsonResponseObj = self.response.json()
+        jsonResponse = jsonResponseObj['response'] 
+        print("Your Prompt: " + self.prompt)
+        print(f"Model: {MODEL} response:  "  + jsonResponse)
+
     def response(self,prompt=""): 
-        request.post()
+        pass
     def streamResponse(self): 
         pass
 
@@ -160,8 +180,10 @@ class user():
 
 def main():
 
-    olamCCLi=user("sup")
-    olamCCLi.changeModel("llama3")
+    olamCCLi=user("short answer, what is 1+1")
+    olamCCLi.getPrompt()
+    olamCCLi.requestBuilder()
+    #olamCCLi.changeModel('Gemma')
     
 
 if __name__ == '__main__': 
