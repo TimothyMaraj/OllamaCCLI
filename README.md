@@ -5,3 +5,6 @@ OllamaCCLI is a Custom Command Line Interface built for fun. It serves as a prac
 # Future Plans
 - implement model switching/ selection
 - list useable models 
+
+# notes: 
+- yes the .env file should be on this repo, taking some liberty here and using it store a list of Models the user is able to use. yes the api will give you a list, but I thought this was a cool way to do it
