@@ -113,43 +113,25 @@ class user():
         - should list models avialable from a list? 
         - put in env varaibles for now ? 
         - using the api to get this list && updating the json wit it 
-
-        API: 
-            GET /api/tags
-
-            json response like: 
-            {
-            "models": [
-                {
-                "name": "codellama:13b",
-                "modified_at": "2023-11-04T14:56:49.277302595-07:00",
-                "size": 7365960935,
-                "digest": "9f438cb9cd581fc025612d27f7c1a6669ff83a8bb0ed86c94fcf4c5440555697",
-                "details": {
-                    "format": "gguf",
-                    "family": "llama",
-                    "families": null,
-                    "parameter_size": "13B",
-                    "quantization_level": "Q4_0"
-                }
-                },
-                    {
-                "name": "llama2:latest",
-                "modified_at": "2023-12-07T09:32:18.757212583-08:00",
-                "size": 3825819519,
-                "digest": "fe938a131f40e6f6d40083c9f0f430a515233eb2edaa6d72eb85c50d64f2300e",
-                "details": {
-                    "format": "gguf",
-                    "family": "llama",
-                    "families": null,
-                    "parameter_size": "7B",
-                    "quantization_level": "Q4_0"
-                    }
-                    }
-                ]
-            }
         """
-        pass
+        returnResponse=""
+        self.response=request.get("http://localhost:11434/api/tags")
+
+        returnResponse=self.response.json()
+
+        print(type(returnResponse))
+        print(returnResponse['models'])
+
+        listOfModels=[]
+        temp=""
+        for models in returnResponse['models']:
+            for key in models: 
+                if key == 'name':
+                    temp+=str(models['name'])
+                    
+        listOfModels.append(temp)
+        print(listOfModels)
+
     def updateModelList(self): 
         """
         - updates the json if a new model is installed? 
@@ -186,8 +168,9 @@ class user():
 def main():
 
     olamCCLi=user("short answer, what is 1+1")
-    olamCCLi.getPrompt()
-    olamCCLi.requestBuilder()
+    #olamCCLi.getPrompt()
+    #olamCCLi.requestBuilder()
+    olamCCLi.listModels()
     #olamCCLi.changeModel('Gemma')
     
 
